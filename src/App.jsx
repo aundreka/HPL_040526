@@ -36,8 +36,23 @@ const COMPONENTS = [
   },
 ];
 
+function getBasePath() {
+  return import.meta.env.BASE_URL?.replace(/\/+$/, "") || "";
+}
+
 function getCurrentPath() {
-  return window.location.pathname.replace(/\/+$/, "") || "/";
+  const hashPath = window.location.hash.replace(/^#/, "").replace(/\/+$/, "");
+  if (hashPath) return hashPath.startsWith("/") ? hashPath : `/${hashPath}`;
+
+  const basePath = getBasePath();
+  const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
+
+  if (basePath && pathname.startsWith(basePath)) {
+    const strippedPath = pathname.slice(basePath.length);
+    return strippedPath || "/";
+  }
+
+  return pathname;
 }
 
 function getComponentFromPath(pathname) {
@@ -53,7 +68,11 @@ export default function App() {
   useEffect(() => {
     const syncPath = () => setPathname(getCurrentPath());
     window.addEventListener("popstate", syncPath);
-    return () => window.removeEventListener("popstate", syncPath);
+    window.addEventListener("hashchange", syncPath);
+    return () => {
+      window.removeEventListener("popstate", syncPath);
+      window.removeEventListener("hashchange", syncPath);
+    };
   }, []);
 
   useEffect(() => {
@@ -89,7 +108,7 @@ export default function App() {
               onClick={() => {
                 playClick();
                 window.open(
-                  `/components/${item.id}`,
+                  `${window.location.origin}${getBasePath()}/#/components/${item.id}`,
                   "_blank",
                   "noopener,noreferrer"
                 );
