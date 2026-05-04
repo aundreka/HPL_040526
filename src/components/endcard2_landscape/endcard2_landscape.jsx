@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./endcard2_landscape.css";
 import { useSound } from "../../hooks/useSound";
 import clickSfx from "../../assets/sfx/click.wav";
@@ -26,16 +26,29 @@ export default function Endcard2Landscape() {
   const playClick = useSound(clickSfx, 0.45);
   const playPop = useSound(popSfx, 0.45);
   const hasMountedRef = useRef(false);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setBouncing(true);
-      setTimeout(() => {
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
         setCurrent((prev) => (prev + 1) % IMAGES.length);
         setBouncing(false);
+        timeoutRef.current = null;
       }, BOUNCE_OUT_DURATION);
     }, INTERVAL);
-    return () => clearInterval(timer);
+
+    return () => {
+      clearInterval(timer);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -48,7 +61,6 @@ export default function Endcard2Landscape() {
 
   return (
     <div className="ec2l-page" style={{ backgroundImage: `url(${bg})` }}>
-      {/* LEFT — bouncing image */}
       <div className="ec2l-left">
         <div className={`ec2l-image-wrap ${bouncing ? "bounce-out" : "bounce-in"}`}>
           <img
@@ -69,7 +81,6 @@ export default function Endcard2Landscape() {
         </div>
       </div>
 
-      {/* RIGHT — branding */}
       <div className="right-panel">
         <img src={logo} alt="Flutterhabit" className="logo" />
         <img src={title} alt="The Glow-Getter Brunette" className="title-img" />

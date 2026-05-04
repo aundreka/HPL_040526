@@ -219,7 +219,7 @@ function MIP02() {
       <div className="shopNowWrap">
         <a
           className="shopNowImageButton"
-          href="https://aundreka.github.io/portfolio"
+          href="https://flutterhabit.com/"
           target="_blank"
           rel="noreferrer"
           onClick={playClick}          /* QA #9 – click SFX */

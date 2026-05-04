@@ -62,16 +62,7 @@ export default function Endcard2Portrait() {
           </div>
         </div>
 
-        {/* Dots */}
-        <div className="dots">
-          {IMAGES.map((_, i) => (
-            <button
-              key={i}
-              className={`dot ${i === current ? "dot-active" : ""}`}
-              onClick={() => setCurrent(i)}
-            />
-          ))}
-        </div>
+       
 
         {/* CTA */}
         <img
