@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./endcard1_portrait.css";
 import { useSound } from "../../hooks/useSound";
 import clickSfx from "../../assets/sfx/click.wav";
@@ -55,10 +55,15 @@ export default function Endcard1Portrait() {
   const [displayStep, setDisplayStep] = useState(0);
   const playClick = useSound(clickSfx, 0.45);
   const playPop = useSound(popSfx, 0.45);
-  const hasMountedRef = useRef(false);
   const animationFrameRef = useRef(0);
   const displayStepRef = useRef(0);
   const current = getNormalizedIndex(targetStep, IMAGES.length);
+
+  const startTransition = useCallback((stepDelta) => {
+    if (stepDelta === 0) return;
+    playPop();
+    setTargetStep((prev) => prev + stepDelta);
+  }, [playPop]);
 
   const openSite = () => {
     playClick();
@@ -67,18 +72,10 @@ export default function Endcard1Portrait() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTargetStep((prev) => prev + 1);
+      startTransition(1);
     }, INTERVAL);
     return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      return;
-    }
-    playPop();
-  }, [targetStep, playPop]);
+  }, [startTransition]);
 
   useEffect(() => {
     const startStep = displayStepRef.current;
@@ -157,7 +154,7 @@ export default function Endcard1Portrait() {
             <button
               key={i}
               className={`dot ${i === current ? "dot-active" : ""}`}
-              onClick={() => setTargetStep((prev) => prev + getNormalizedIndex(i - current, IMAGES.length))}
+              onClick={() => startTransition(getNormalizedIndex(i - current, IMAGES.length))}
             />
           ))}
         </div>

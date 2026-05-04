@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./endcard1_landscape.css";
 import { useSound } from "../../hooks/useSound";
 import clickSfx from "../../assets/sfx/click.wav";
@@ -53,12 +53,17 @@ function getSlideStyle(index, displayStep) {
 export default function EC1L() {
   const [targetStep, setTargetStep] = useState(0);
   const [displayStep, setDisplayStep] = useState(0);
-  const hasMountedRef = useRef(false);
   const playClick = useSound(clickSfx, 0.45);
   const playPop = useSound(popSfx, 0.45);
   const animationFrameRef = useRef(0);
   const displayStepRef = useRef(0);
   const current = getNormalizedIndex(targetStep, IMAGES.length);
+  const startTransition = useCallback((stepDelta) => {
+    if (stepDelta === 0) return;
+    playPop();
+    setTargetStep((prev) => prev + stepDelta);
+  }, [playPop]);
+
   const openSite = () => {
     playClick();
     window.open(SITE_URL, "_blank");
@@ -66,18 +71,10 @@ export default function EC1L() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTargetStep((prev) => prev + 1);
+      startTransition(1);
     }, INTERVAL);
     return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      return;
-    }
-    playPop();
-  }, [targetStep, playPop]);
+  }, [startTransition]);
 
   useEffect(() => {
     const startStep = displayStepRef.current;
@@ -144,8 +141,7 @@ export default function EC1L() {
               className={`dot ${i === current ? "dot-active" : ""}`}
               onClick={() => {
                 const forwardDelta = getNormalizedIndex(i - current, IMAGES.length);
-                if (forwardDelta === 0) return;
-                setTargetStep((prev) => prev + forwardDelta);
+                startTransition(forwardDelta);
               }}
             />
           ))}

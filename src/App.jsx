@@ -37,7 +37,14 @@ const COMPONENTS = [
 ];
 
 function getBasePath() {
-  return import.meta.env.BASE_URL?.replace(/\/+$/, "") || "";
+  const pathname = window.location.pathname.replace(/\/+$/, "");
+  const componentPathIndex = pathname.indexOf("/components/");
+
+  if (componentPathIndex >= 0) {
+    return pathname.slice(0, componentPathIndex) || "";
+  }
+
+  return pathname === "/" ? "" : pathname;
 }
 
 function getCurrentPath() {
