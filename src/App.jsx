@@ -1,77 +1,98 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
-import logo from "./assets/images/landscape/logo.png";
-import title from "./assets/images/landscape/title.png";
-import cta from "./assets/images/landscape/cta.png";
-import bg from "./assets/images/landscape/bg.png";
+import Endcard1Landscape from "./components/endcard1_landscape/endcard1_landscape.jsx";
+import Endcard1Portrait from "./components/endcard1_portrait/endcard1_portrait.jsx";
+import MIP02 from "./components/MIP02/MIP02.jsx";
 
-import image1 from "./assets/images/landscape/IMAGE_1.png";
-import image2 from "./assets/images/landscape/IMAGE_2.png";
-import image3 from "./assets/images/landscape/IMAGE_3.png";
-import image4 from "./assets/images/landscape/IMAGE_4.png";
-import image5 from "./assets/images/landscape/IMAGE_5.png";
-import image6 from "./assets/images/landscape/IMAGE_6.png";
+const COMPONENTS = [
+  {
+    id: "endcard1-portrait",
+    label: "Endcard 1 Portrait",
+    description: "Portrait carousel end card.",
+    Component: Endcard1Portrait,
+  },
+  {
+    id: "endcard1-landscape",
+    label: "Endcard 1 Landscape",
+    description: "Landscape carousel end card.",
+    Component: Endcard1Landscape,
+  },
+  {
+    id: "mip02",
+    label: "MIP02",
+    description: "Scrollable MIP product flow.",
+    Component: MIP02,
+  },
+];
 
-const IMAGES = [image1, image2, image3, image4, image5, image6];
-const INTERVAL = 2000;
+function getCurrentPath() {
+  return window.location.pathname.replace(/\/+$/, "") || "/";
+}
+
+function getComponentFromPath(pathname) {
+  const match = pathname.match(/^\/components\/([^/]+)$/);
+  if (!match) return null;
+  return COMPONENTS.find((item) => item.id === match[1]) ?? null;
+}
 
 export default function App() {
-  const [current, setCurrent] = useState(0);
-  const trackRef = useRef(null);
+  const [pathname, setPathname] = useState(() => getCurrentPath());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % IMAGES.length);
-    }, INTERVAL);
-    return () => clearInterval(timer);
+    const syncPath = () => {
+      setPathname(getCurrentPath());
+    };
+
+    window.addEventListener("popstate", syncPath);
+    return () => window.removeEventListener("popstate", syncPath);
   }, []);
 
   useEffect(() => {
-    if (!trackRef.current) return;
-    const slide = trackRef.current.children[current];
-    if (!slide) return;
-    const slideLeft = slide.offsetLeft;
-    trackRef.current.style.transform = `translateX(-${slideLeft}px)`;
-  }, [current]);
+    const component = getComponentFromPath(pathname);
+    const isMIP02Page = component?.id === "mip02";
+
+    document.body.classList.toggle("mip02-page", isMIP02Page);
+
+    return () => {
+      document.body.classList.remove("mip02-page");
+    };
+  }, [pathname]);
+
+  const activeComponent = useMemo(() => getComponentFromPath(pathname), [pathname]);
+
+  if (activeComponent) {
+    const ActiveComponent = activeComponent.Component;
+
+    return (
+      <div className="componentOnlyPage">
+        <ActiveComponent />
+      </div>
+    );
+  }
 
   return (
-    <div className="page" style={{ backgroundImage: `url(${bg})` }}>
-      <div className="left-panel">
-        <div className="carousel-viewport">
-          <div className="carousel-track" ref={trackRef}>
-            {IMAGES.map((img, i) => (
-              <div
-                key={i}
-                className={`carousel-slide ${i === current ? "active" : ""}`}
-                onClick={() => setCurrent(i)}
-              >
-                <img src={img} alt={`Slide ${i + 1}`} className="slide-img" />
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="showcaseShell">
+      <main className="showcaseBrowser">
+        <p className="showcaseEyebrow">Component Browser</p>
+        <h1 className="showcaseTitle">Open each component on its own page</h1>
+        <p className="showcaseDescription">
+          Choose a component below and it will navigate to a dedicated page view.
+        </p>
 
-        <div className="dots">
-          {IMAGES.map((_, i) => (
+        <div className="showcaseNav">
+          {COMPONENTS.map((item) => (
             <button
-              key={i}
-              className={`dot ${i === current ? "dot-active" : ""}`}
-              onClick={() => setCurrent(i)}
-            />
+              key={item.id}
+              type="button"
+              className="showcaseButton"
+              onClick={() => window.open(`/components/${item.id}`, "_blank", "noopener,noreferrer")}
+            >
+              <span className="showcaseButtonLabel">{item.label}</span>
+              <span className="showcaseButtonMeta">{item.description}</span>
+            </button>
           ))}
         </div>
-      </div>
-
-      <div className="right-panel">
-        <img src={logo} alt="Flutterhabit" className="logo" />
-        <img src={title} alt="The Glow-Getter Brunette" className="title-img" />
-        <img
-          src={cta}
-          alt="Shop Now"
-          className="cta-btn"
-          onClick={() => window.open("https://flutterhabit.com", "_blank")}
-        />
-      </div>
+      </main>
     </div>
   );
 }

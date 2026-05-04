@@ -1,0 +1,183 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.page {
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  overflow: hidden;
+}
+
+.left-panel {
+  flex: 0 0 52%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 40px 0 40px 5%;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+
+.image-stage {
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 4 / 5;
+  position: relative;
+  cursor: pointer;
+}
+
+.stage-slide {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2.5px solid #d9a8a8;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.22);
+  background: #fff;
+  will-change: transform, opacity;
+}
+
+.stage-slide-active {
+  opacity: 1;
+  transform: translateY(0) scale(1) rotate(0deg);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+}
+
+.stage-slide-enter {
+  animation: bounceIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  z-index: 2;
+}
+
+.stage-slide-exit {
+  animation: bounceOut 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+  z-index: 1;
+}
+
+.slide-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.dots {
+  display: flex;
+  gap: 9px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.dot-active {
+  background: #fff;
+  transform: scale(1.35);
+}
+
+.right-panel {
+  flex: 0 0 48%;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 40px 6%;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.logo {
+  width: auto;
+  max-width: 200px;
+  height: auto;
+  object-fit: contain;
+}
+
+.title-img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  object-fit: contain;
+}
+
+.cta-btn {
+  width: 80%;
+  max-width: 340px;
+  display: block;
+  height: auto;
+  cursor: pointer;
+  border-radius: 12px;
+  transform-origin: center;
+  will-change: transform;
+  animation: pulse 1.8s ease-in-out infinite;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.cta-btn:hover {
+  animation-play-state: paused;
+  transform: scale(1.05);
+  filter: brightness(1.1);
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.cta-btn:active {
+  transform: scale(0.97);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.048); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: translateY(36px) scale(0.88) rotate(-2deg);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1.04) rotate(1deg);
+  }
+  78% {
+    transform: translateY(8px) scale(0.99) rotate(-0.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes bounceOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  35% {
+    transform: translateY(-12px) scale(1.02) rotate(1deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(0.9) rotate(2deg);
+  }
+}
