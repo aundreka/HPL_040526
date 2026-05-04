@@ -17,6 +17,7 @@ const INTERVAL = 2000;
 
 export default function App() {
   const [current, setCurrent] = useState(0);
+  const trackRef = useRef(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -25,15 +26,19 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const slide = trackRef.current.children[current];
+    if (!slide) return;
+    const slideLeft = slide.offsetLeft;
+    trackRef.current.style.transform = `translateX(-${slideLeft}px)`;
+  }, [current]);
+
   return (
     <div className="page" style={{ backgroundImage: `url(${bg})` }}>
-      {/* LEFT — carousel */}
       <div className="left-panel">
         <div className="carousel-viewport">
-          <div
-            className="carousel-track"
-            style={{ transform: `translateX(-${current * 90}%)` }}
-          >
+          <div className="carousel-track" ref={trackRef}>
             {IMAGES.map((img, i) => (
               <div
                 key={i}
@@ -46,7 +51,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dots */}
         <div className="dots">
           {IMAGES.map((_, i) => (
             <button
@@ -58,7 +62,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* RIGHT — branding + cta */}
       <div className="right-panel">
         <img src={logo} alt="Flutterhabit" className="logo" />
         <img src={title} alt="The Glow-Getter Brunette" className="title-img" />
