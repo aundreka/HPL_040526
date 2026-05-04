@@ -39,10 +39,7 @@ export default function App() {
   const [pathname, setPathname] = useState(() => getCurrentPath());
 
   useEffect(() => {
-    const syncPath = () => {
-      setPathname(getCurrentPath());
-    };
-
+    const syncPath = () => setPathname(getCurrentPath());
     window.addEventListener("popstate", syncPath);
     return () => window.removeEventListener("popstate", syncPath);
   }, []);
@@ -50,19 +47,14 @@ export default function App() {
   useEffect(() => {
     const component = getComponentFromPath(pathname);
     const isMIP02Page = component?.id === "mip02";
-
     document.body.classList.toggle("mip02-page", isMIP02Page);
-
-    return () => {
-      document.body.classList.remove("mip02-page");
-    };
+    return () => document.body.classList.remove("mip02-page");
   }, [pathname]);
 
   const activeComponent = useMemo(() => getComponentFromPath(pathname), [pathname]);
 
   if (activeComponent) {
     const ActiveComponent = activeComponent.Component;
-
     return (
       <div className="componentOnlyPage">
         <ActiveComponent />
@@ -74,18 +66,23 @@ export default function App() {
     <div className="showcaseShell">
       <main className="showcaseBrowser">
         <p className="showcaseEyebrow">Component Browser</p>
-        <h1 className="showcaseTitle">Open each component on its own page</h1>
+        <h1 className="showcaseTitle">Components</h1>
         <p className="showcaseDescription">
-          Choose a component below and it will navigate to a dedicated page view.
+          Select a component to open it in a dedicated page.
         </p>
-
         <div className="showcaseNav">
           {COMPONENTS.map((item) => (
             <button
               key={item.id}
               type="button"
               className="showcaseButton"
-              onClick={() => window.open(`/components/${item.id}`, "_blank", "noopener,noreferrer")}
+              onClick={() =>
+                window.open(
+                  `/components/${item.id}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                )
+              }
             >
               <span className="showcaseButtonLabel">{item.label}</span>
               <span className="showcaseButtonMeta">{item.description}</span>
