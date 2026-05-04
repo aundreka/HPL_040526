@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { useSound } from "./hooks/useSound";
+import { usePreloadAssets } from "./hooks/usePreloadAssets";
 import clickSfx from "./assets/sfx/click.wav";
+import { PRELOAD_AUDIO_URLS, PRELOAD_IMAGE_URLS } from "./assets/preloadManifest";
 import Endcard1Landscape from "./components/endcard1_landscape/endcard1_landscape.jsx";
 import Endcard1Portrait from "./components/endcard1_portrait/endcard1_portrait.jsx";
 import Endcard2Landscape from "./components/endcard2_landscape";
@@ -71,6 +73,7 @@ function getComponentFromPath(pathname) {
 export default function App() {
   const [pathname, setPathname] = useState(() => getCurrentPath());
   const playClick = useSound(clickSfx, 0.45);
+  usePreloadAssets(PRELOAD_IMAGE_URLS, PRELOAD_AUDIO_URLS);
 
   useEffect(() => {
     const syncPath = () => setPathname(getCurrentPath());

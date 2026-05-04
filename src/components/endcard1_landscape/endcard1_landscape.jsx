@@ -19,6 +19,7 @@ const IMAGES = [image1, image2, image3, image4, image5, image6];
 const INTERVAL = 2000;
 const ANGLE_STEP = 360 / IMAGES.length;
 const ROTATION_DURATION = 420;
+const POP_SYNC_DELAY = 180;
 const SITE_URL = "https://flutterhabit.com";
 
 function getNormalizedIndex(value, total) {
@@ -57,10 +58,15 @@ export default function EC1L() {
   const playPop = useSound(popSfx, 0.45);
   const animationFrameRef = useRef(0);
   const displayStepRef = useRef(0);
+  const popTimeoutRef = useRef(0);
   const current = getNormalizedIndex(targetStep, IMAGES.length);
   const startTransition = useCallback((stepDelta) => {
     if (stepDelta === 0) return;
-    playPop();
+    window.clearTimeout(popTimeoutRef.current);
+    popTimeoutRef.current = window.setTimeout(() => {
+      playPop();
+      popTimeoutRef.current = 0;
+    }, POP_SYNC_DELAY);
     setTargetStep((prev) => prev + stepDelta);
   }, [playPop]);
 
@@ -73,7 +79,10 @@ export default function EC1L() {
     const timer = setInterval(() => {
       startTransition(1);
     }, INTERVAL);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      window.clearTimeout(popTimeoutRef.current);
+    };
   }, [startTransition]);
 
   useEffect(() => {
